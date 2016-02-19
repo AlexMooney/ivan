@@ -34,13 +34,13 @@ cchar* igraph::RawGraphicFileName[] =
   "Graphics/Char.pcx",
   "Graphics/Humanoid.pcx",
   "Graphics/Effect.pcx",
+  "Graphics/Symbol.pcx",
   "Graphics/Cursor.pcx"
 };
 cchar* igraph::GraphicFileName[] =
 {
   "Graphics/WTerra.pcx",
   "Graphics/FOW.pcx",
-  "Graphics/Symbol.pcx",
   "Graphics/Smiley.pcx"
 };
 tilemap igraph::TileMap;
