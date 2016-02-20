@@ -241,14 +241,14 @@ const name##prototype name::ProtoType
 #define GR_CHARACTER 3
 #define GR_HUMANOID 4
 #define GR_EFFECT 5
-#define GR_CURSOR 6
+#define GR_SYMBOL 6
+#define GR_CURSOR 7
 
 #define GRAPHIC_TYPES 4
 
 #define GR_WTERRAIN 0
 #define GR_FOW 1
-#define GR_SYMBOL 2
-#define GR_SMILEY 3
+#define GR_SMILEY 2
 
 /* SpecialFlags for graphics system. No one knows what "ST_" means... */
 
