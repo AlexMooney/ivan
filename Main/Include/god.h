@@ -64,6 +64,9 @@ class god
   void PrintRelation() const;
   void SetIsKnown(truth What) { Known = What; }
   truth IsKnown() const { return Known; }
+  truth IsWorshipping() const { return Worshipping; }
+  void SetIsWorshipped(truth What) { Worshipping = What; }
+  truth LikesConduct() { return true; };
   void PlayerKickedAltar() { AdjustRelation(-100); }
   void PlayerKickedFriendsAltar() { AdjustRelation(-50); }
   virtual truth PlayerVomitedOnAltar(liquid*);
@@ -87,6 +90,7 @@ class god
   int Relation, LastPray;
   long Timer;
   truth Known;
+  truth Worshipping;
 };
 
 #ifdef __FILE_OF_STATIC_GOD_PROTOTYPE_DEFINITIONS__

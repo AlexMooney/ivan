@@ -22,7 +22,7 @@
 #define CHAOS_ELITE_COLOR MakeRGB16(40, 40, 40)
 
 cchar* valpurus::GetName() const { return "Valpurus"; }
-cchar* valpurus::GetDescription() const { return "King of Gods"; }
+cchar* valpurus::GetDescription() const { return "king of gods"; }
 int valpurus::GetAlignment() const { return ALPP; }
 int valpurus::GetBasicAlignment() const { return GOOD; }
 col16 valpurus::GetColor() const { return LAWFUL_BASIC_COLOR; }
@@ -120,7 +120,7 @@ col16 cruentus::GetColor() const { return CHAOS_BASIC_COLOR; }
 col16 cruentus::GetEliteColor() const { return CHAOS_ELITE_COLOR; }
 
 cchar* mortifer::GetName() const { return "Mortifer"; }
-cchar* mortifer::GetDescription() const { return "Destroyer of Worlds"; }
+cchar* mortifer::GetDescription() const { return "destroyer of worlds"; }
 int mortifer::GetAlignment() const { return ACMM; }
 int mortifer::GetBasicAlignment() const { return EVIL; }
 col16 mortifer::GetColor() const { return CHAOS_BASIC_COLOR; }

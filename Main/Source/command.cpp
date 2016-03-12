@@ -864,45 +864,27 @@ truth commandsystem::Pray(character* Char)
     return false;
   else
   {
-    if(Char->GetLSquareUnder()->GetDivineMaster())
+    if(game::GetGod(Known[Select])->IsWorshipping())
     {
-      if(!Select)
+      if(game::TruthQuestion(CONST_S("Do you really wish to pray to ")
+                             + game::GetGod(Known[Select])->GetName() + "? [y/N]"))
       {
-        if(game::TruthQuestion(CONST_S("Do you really wish to pray to ")
-                               + game::GetGod(Char->GetLSquareUnder()->GetDivineMaster())->GetName() + "? [y/N]"))
-          game::GetGod(Char->GetLSquareUnder()->GetDivineMaster())->Pray();
+        if(Char->StateIsActivated(CONFUSED) && !(RAND() & 7))
+          ADD_MESSAGE("You try to call out for help but you're too confused!");
         else
-          return false;
+          game::GetGod(Known[Select])->Pray();
       }
       else
         return false;
     }
     else
     {
-      if(game::TruthQuestion(CONST_S("Do you really wish to pray to ")
+      if(game::TruthQuestion(CONST_S("Do you really wish to devote yourself to the worship of ")
                              + game::GetGod(Known[Select])->GetName() + "? [y/N]"))
       {
-        if(Char->StateIsActivated(CONFUSED) && !(RAND() & 7))
-        {
-          int Index;
-          for(Index = 1 + RAND() % GODS;
-              Index == Known[Select];
-              Index = 1 + RAND() % GODS);
-
-          if(game::GetGod(Index)->IsKnown())
-            ADD_MESSAGE("You feel something went wrong in the rituals. You have "
-                        "accidentally prayed to %s!", game::GetGod(Index)->GetName());
-          else
-            ADD_MESSAGE("Your rituals were seriously incorrect. You have accidentally "
-                        "prayed to an unknown god, but have no idea how!");
-
-          game::GetGod(Index)->Pray();
-        }
-        else
-          game::GetGod(Known[Select])->Pray();
+        ADD_MESSAGE("You feel accepted");
+        game::GetGod(Known[Select])->SetIsWorshipped(true);
       }
-      else
-        return false;
     }
 
     Char->EditAP(-1000);

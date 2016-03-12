@@ -15,7 +15,7 @@
 godprototype::godprototype(godspawner Spawner, cchar* ClassID)
 : Spawner(Spawner), ClassID(ClassID) { Index = protocontainer<god>::Add(this); }
 
-god::god() : Relation(0), LastPray(-1), Timer(0), Known(false) { }
+god::god() : Relation(0), LastPray(-1), Timer(1000), Known(false), Worshipping(false) { }
 int god::GetBasicAlignment() const { return NEUTRAL; }
 
 void god::Pray()
@@ -120,38 +120,18 @@ festring god::GetCompleteDescription() const
 
   if(game::WizardModeIsActive())
   {
-    Desc << "Timer: " << Timer << " Relation: " << Relation;
+    Desc << "Worshipping: " << Worshipping << " Timer: " << Timer << " Relation: " << Relation;
     return Desc;
   }
   else
-    Desc << "You have ";
-  if(LastPray > -1)
   {
-    int Hour = LastPray / 2000;
-    int Day = Hour / 24;
-    Hour %= 24;
-    int Min = LastPray % 2000 * 60 / 2000;
-    Desc << "last prayed ";
-    if(Day >= 7)
-      Desc << "over a week ago.";
+    Desc << "You ";
+    if(Worshipping)
+      Desc << "venerate the ";
     else
-    {
-      if(Day > 1)
-        Desc << Day << " days, ";
-      else if(Day)
-        Desc << "one day, ";
-      if(Hour > 1)
-        Desc << Hour << " hours, ";
-      else if(Hour)
-        Desc << "one hour, ";
-      if(Day || Hour)
-        Desc << "and " << Min << " minutes ago.";
-      else
-        Desc << Min << " minutes ago.";
-    }
+      Desc << "have studied the ";
+    Desc << GetDescription();
   }
-  else
-    Desc << "never prayed to this god.";
   return Desc;
 }
 
@@ -522,18 +502,23 @@ void god::SignalRandomAltarGeneration(const std::vector<v2>& RoomSquare)
 void god::Save(outputfile& SaveFile) const
 {
   SaveFile << static_cast<ushort>(GetType());
-  SaveFile << Relation << Timer << Known << LastPray;
+  SaveFile << Relation << Timer << Known << LastPray << Worshipping;
 }
 
 void god::Load(inputfile& SaveFile)
 {
-  SaveFile >> Relation >> Timer >> Known >> LastPray;
+  SaveFile >> Relation >> Timer >> Known >> LastPray >> Worshipping;
 }
 
 void god::ApplyDivineTick()
 {
-  if(Timer)
-    --Timer;
+  if(Worshipping && LikesConduct())
+  {
+    if(Timer)
+      --Timer;
+    else
+      Pray();
+  }
   if(LastPray > -1 && LastPray < 336000)
     ++LastPray;
 }
