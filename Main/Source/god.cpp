@@ -78,6 +78,8 @@ void god::Pray()
       AdjustRelation(-50);
       game::ApplyDivineAlignmentBonuses(this, 10, false);
       PLAYER->EditExperience(WISDOM, -50, 1 << 10);
+      ADD_MESSAGE("You cease your worship of %s.", GetName());
+      SetIsWorshipped(false);
     }
   else
     if(Relation > RAND_N(500) && Timer < RAND_N(500000))
@@ -108,6 +110,8 @@ void god::Pray()
         if(Angel)
           ADD_MESSAGE("%s seems to be hostile.", Angel->CHAR_DESCRIPTION(DEFINITE));
       }
+      ADD_MESSAGE("You cease your worship of %s.", GetName());
+      SetIsWorshipped(false);
     }
 }
 
