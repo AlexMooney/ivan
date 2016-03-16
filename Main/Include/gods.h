@@ -28,6 +28,7 @@ GOD(valpurus, god)
   virtual int GetSex() const { return MALE; }
  protected:
   virtual void PrayGoodEffect();
+  virtual void RewardGoodEffect();
   virtual void PrayBadEffect();
 };
 
@@ -43,6 +44,7 @@ GOD(legifer, god)
   virtual int GetSex() const { return MALE; }
  protected:
   virtual void PrayGoodEffect();
+  virtual void RewardGoodEffect();
   virtual void PrayBadEffect();
 };
 
@@ -59,6 +61,7 @@ GOD(atavus, god)
   virtual int GetSex() const { return MALE; }
  protected:
   virtual void PrayGoodEffect();
+  virtual void RewardGoodEffect();
   virtual void PrayBadEffect();
 };
 
@@ -74,6 +77,7 @@ GOD(dulcis, god)
   virtual int GetSex() const { return FEMALE; }
  protected:
   virtual void PrayGoodEffect();
+  virtual void RewardGoodEffect();
   virtual void PrayBadEffect();
 };
 
@@ -92,6 +96,7 @@ GOD(seges, god)
   virtual int GetSex() const { return FEMALE; }
  protected:
   virtual void PrayGoodEffect();
+  virtual void RewardGoodEffect();
   virtual void PrayBadEffect();
 };
 
@@ -107,6 +112,7 @@ GOD(sophos, god)
   virtual int GetSex() const { return MALE; }
  protected:
   virtual void PrayGoodEffect();
+  virtual void RewardGoodEffect();
   virtual void PrayBadEffect();
 };
 
@@ -122,6 +128,7 @@ GOD(silva, god)
   virtual int GetSex() const { return FEMALE; }
  protected:
   virtual void PrayGoodEffect();
+  virtual void RewardGoodEffect();
   virtual void PrayBadEffect();
 };
 
@@ -137,6 +144,7 @@ GOD(loricatus, god)
   virtual int GetSex() const { return MALE; }
  protected:
   virtual void PrayGoodEffect();
+  virtual void RewardGoodEffect();
   virtual void PrayBadEffect();
 };
 
@@ -152,6 +160,7 @@ GOD(mellis, god)
   virtual int GetSex() const { return MALE; }
  protected:
   virtual void PrayGoodEffect();
+  virtual void RewardGoodEffect();
   virtual void PrayBadEffect();
 };
 
@@ -167,6 +176,7 @@ GOD(cleptia, god)
   virtual int GetSex() const { return FEMALE; }
  protected:
   virtual void PrayGoodEffect();
+  virtual void RewardGoodEffect();
   virtual void PrayBadEffect();
 };
 
@@ -182,6 +192,7 @@ GOD(nefas, god)
   virtual int GetSex() const { return FEMALE; }
  protected:
   virtual void PrayGoodEffect();
+  virtual void RewardGoodEffect();
   virtual void PrayBadEffect();
 };
 
@@ -201,6 +212,7 @@ GOD(scabies, god)
   virtual truth LikesVomit() const { return true; }
  protected:
   virtual void PrayGoodEffect();
+  virtual void RewardGoodEffect();
   virtual void PrayBadEffect();
 };
 
@@ -216,6 +228,7 @@ GOD(infuscor, god)
   virtual int GetSex() const { return FEMALE; }
  protected:
   virtual void PrayGoodEffect();
+  virtual void RewardGoodEffect();
   virtual void PrayBadEffect();
 };
 
@@ -231,6 +244,7 @@ GOD(cruentus, god)
   virtual int GetSex() const { return MALE; }
  protected:
   virtual void PrayGoodEffect();
+  virtual void RewardGoodEffect();
   virtual void PrayBadEffect();
 };
 
@@ -247,6 +261,7 @@ GOD(mortifer, god)
   virtual int GetSex() const { return MALE; }
  protected:
   virtual void PrayGoodEffect();
+  virtual void RewardGoodEffect();
   virtual void PrayBadEffect();
 };
 

@@ -126,6 +126,9 @@ int mortifer::GetBasicAlignment() const { return EVIL; }
 col16 mortifer::GetColor() const { return CHAOS_BASIC_COLOR; }
 col16 mortifer::GetEliteColor() const { return CHAOS_ELITE_COLOR; }
 
+
+void sophos::RewardGoodEffect(){}
+
 void sophos::PrayGoodEffect()
 {
   ADD_MESSAGE("Suddenly, the fabric of space experiences an unnaturally "
@@ -139,6 +142,8 @@ void sophos::PrayBadEffect()
   PLAYER->TeleportSomePartsAway(1 + (RAND() & 1));
   PLAYER->CheckDeath(CONST_S("shattered to pieces by the wrath of ") + GetName(), 0);
 }
+
+void valpurus::RewardGoodEffect(){}
 
 void valpurus::PrayGoodEffect()
 {
@@ -167,6 +172,8 @@ void valpurus::PrayBadEffect()
   PLAYER->CheckDeath(CONST_S("faced the hammer of Justice from the hand of ") + GetName(), 0);
 }
 
+void legifer::RewardGoodEffect(){}
+
 void legifer::PrayGoodEffect()
 {
   ADD_MESSAGE("A booming voice echoes: \"Inlux! Inlux! Save us!\" A huge firestorm engulfs everything around you.");
@@ -180,6 +187,8 @@ void legifer::PrayBadEffect()
   PLAYER->ReceiveDamage(0, 50 + RAND() % 50, FIRE, ALL);
   PLAYER->CheckDeath(CONST_S("burned to death by the wrath of ") + GetName(), 0);
 }
+
+void dulcis::RewardGoodEffect(){}
 
 void dulcis::PrayGoodEffect()
 {
@@ -255,6 +264,8 @@ void dulcis::PrayBadEffect()
   PLAYER->CheckDeath(CONST_S("became insane by listening ") + GetName() + " too much", 0);
 }
 
+void seges::RewardGoodEffect(){}
+
 void seges::PrayGoodEffect()
 {
   if(PLAYER->IsInBadCondition())
@@ -318,17 +329,23 @@ void seges::PrayBadEffect()
 
 void atavus::PrayGoodEffect()
 {
-  if(!Timer && Relation > 500 + RAND_N(500))
+  ADD_MESSAGE("Nothing happens.");
+}
+
+void atavus::RewardGoodEffect()
+{
+  for(int i=0; i<=Relation/100; i++)
   {
-    item* Reward = bodyarmor::Spawn(PLATE_MAIL, NO_MATERIALS);
+    item* Reward = protosystem::BalancedCreateItem(0, Relation, HELMET|CLOAK|BODY_ARMOR|GAUNTLET|BELT|BOOT|TOOL, 0, NO_BROKEN, 0, false);
     Reward->InitMaterials(MAKE_MATERIAL(ARCANITE));
-    ADD_MESSAGE("%s materializes before you.", Reward->CHAR_NAME(INDEFINITE));
-    PLAYER->GetGiftStack()->AddItem(Reward);
-    AdjustTimer(45000);
-    AdjustRelation(-300);
+    if(Reward->GetTruePrice() < Relation) // TODO: compare to existing equipment & HANDLE_IN_PAIRS
+    {
+      ADD_MESSAGE("%s materializes before you.", Reward->CHAR_NAME(INDEFINITE));
+      PLAYER->GetGiftStack()->AddItem(Reward);
+      AdjustTimer(100*Reward->GetTruePrice()); // TODO: change AdjustTimer to do wisdom / alignment
+      return;
+    }
   }
-  else
-    ADD_MESSAGE("Nothing happens.");
 }
 
 void atavus::PrayBadEffect()
@@ -365,6 +382,8 @@ void atavus::PrayBadEffect()
 
   PLAYER->CheckDeath(CONST_S("killed by Atavus's humour"));
 }
+
+void silva::RewardGoodEffect() {}
 
 void silva::PrayGoodEffect()
 {
@@ -544,6 +563,8 @@ void silva::PrayBadEffect()
   }
 }
 
+void loricatus::RewardGoodEffect() {}
+
 void loricatus::PrayGoodEffect()
 {
   item* MainWielded = PLAYER->GetMainWielded();
@@ -685,6 +706,8 @@ void loricatus::PrayBadEffect()
   }
 }
 
+void cleptia::RewardGoodEffect() {}
+
 void cleptia::PrayGoodEffect()
 {
   PLAYER->RestoreStamina();
@@ -714,6 +737,8 @@ void cleptia::PrayBadEffect()
   PLAYER->BeginTemporaryState(SLOW, 250);
 }
 
+void mortifer::RewardGoodEffect() {}
+
 void mortifer::PrayGoodEffect()
 {
   ADD_MESSAGE("The air vibrates violently around you. A terrible undead voice echoes "
@@ -732,6 +757,8 @@ void mortifer::PrayBadEffect()
   PLAYER->EditAttribute(ENDURANCE, -1);
   PLAYER->CheckDeath(CONST_S("obliterated by the unholy power of ") + GetName(), 0);
 }
+
+void mellis::RewardGoodEffect() {}
 
 void mellis::PrayGoodEffect()
 {
@@ -902,6 +929,8 @@ void infuscor::PrayBadEffect()
   PLAYER->LoseConsciousness(1000 + RAND_N(1000));
 }
 
+void nefas::RewardGoodEffect() {}
+
 void nefas::PrayGoodEffect()
 {
   rect Rect;
@@ -971,6 +1000,8 @@ void nefas::PrayBadEffect()
   PLAYER->GetStackUnder()->AddItem(brokenbottle::Spawn());
   PLAYER->CheckDeath(CONST_S("killed while enjoying the company of ") + GetName(), 0);
 }
+
+void scabies::RewardGoodEffect() {}
 
 void scabies::PrayGoodEffect()
 {
@@ -1044,6 +1075,8 @@ void scabies::PrayBadEffect()
   }
 }
 
+void infuscor::RewardGoodEffect() {}
+
 void infuscor::PrayGoodEffect()
 {
   truth Success = false;
@@ -1113,6 +1146,8 @@ void infuscor::PrayGoodEffect()
   for(int c = 0; c < 3; ++c)
     PLAYER->GetGiftStack()->AddItem(scrollofteleportation::Spawn());
 }
+
+void cruentus::RewardGoodEffect() {}
 
 void cruentus::PrayGoodEffect()
 {

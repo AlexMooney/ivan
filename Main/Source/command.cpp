@@ -864,7 +864,7 @@ truth commandsystem::Pray(character* Char)
     return false;
   else
   {
-    if(game::GetGod(Known[Select])->IsWorshipping())
+    if(game::GetGod(Known[Select])->IsWorshiping())
     {
       if(game::TruthQuestion(CONST_S("Do you really wish to pray to ")
                              + game::GetGod(Known[Select])->GetName() + "? [y/N]"))
@@ -883,7 +883,7 @@ truth commandsystem::Pray(character* Char)
                              + game::GetGod(Known[Select])->GetName() + "? [y/N]"))
       {
         ADD_MESSAGE("You feel accepted");
-        game::GetGod(Known[Select])->SetIsWorshipped(true);
+        game::GetGod(Known[Select])->SetIsWorshiping(true);
       }
     }
 

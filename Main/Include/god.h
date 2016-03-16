@@ -64,8 +64,9 @@ class god
   void PrintRelation() const;
   void SetIsKnown(truth What) { Known = What; }
   truth IsKnown() const { return Known; }
-  truth IsWorshipping() const { return Worshipping; }
-  void SetIsWorshipped(truth What) { Worshipping = What; }
+  truth IsWorshiping() const { return Worshiping; }
+  int NumberWorshiping();
+  void SetIsWorshiping(truth What) { Worshiping = What; }
   truth LikesConduct() { return true; };
   void PlayerKickedAltar() { AdjustRelation(-100); }
   void PlayerKickedFriendsAltar() { AdjustRelation(-50); }
@@ -86,11 +87,14 @@ class god
   virtual truth LikesVomit() const { return false; }
  protected:
   virtual void PrayGoodEffect() = 0;
+  virtual void RewardGoodEffect() = 0;
   virtual void PrayBadEffect() = 0;
+  int GiftItem();
+  virtual void Reward();
   int Relation, LastPray;
   long Timer;
   truth Known;
-  truth Worshipping;
+  truth Worshiping;
 };
 
 #ifdef __FILE_OF_STATIC_GOD_PROTOTYPE_DEFINITIONS__

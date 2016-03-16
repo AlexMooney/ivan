@@ -15,8 +15,60 @@
 godprototype::godprototype(godspawner Spawner, cchar* ClassID)
 : Spawner(Spawner), ClassID(ClassID) { Index = protocontainer<god>::Add(this); }
 
-god::god() : Relation(0), LastPray(-1), Timer(1000), Known(false), Worshipping(false) { }
+god::god() : Relation(0), LastPray(-1), Timer(1000), Known(false), Worshiping(false) { }
 int god::GetBasicAlignment() const { return NEUTRAL; }
+
+void god::Reward()
+{
+  if(Relation >= 333)
+    RewardGoodEffect();
+
+  if(Relation >= -333)
+  {
+    AdjustTimer(250);
+    AdjustRelation(5);
+    game::ApplyDivineAlignmentBonuses(this, 1, true);
+    PLAYER->EditExperience(WISDOM, 200, 1 << 7);
+  }
+  else
+  {
+    PrayBadEffect();
+    AdjustTimer(1000);
+    PLAYER->EditExperience(WISDOM, -250, 1 << 10);
+    ADD_MESSAGE("You have been excommunicated by %s.", GetName());
+    SetIsWorshiping(false);
+  }
+}
+
+int god::GiftItem()
+{
+  long Category = RAND() & ANY_CATEGORY;
+
+  if(!Category)
+    Category = ANY_CATEGORY;
+
+  item* Gift = protosystem::BalancedCreateItem(Relation / 2, Relation * 2, Category, 0, 0, GetType());
+
+  if(Gift)
+  {
+    Gift->CalculateEnchantment();
+    PLAYER->GetStack()->AddItem(Gift);
+
+    if(Gift->IsBroken())
+      Gift = Gift->Fix();
+
+    if(Relation == 1000)
+      Gift->EditEnchantment(3);
+    else if(Relation >= 500)
+      Gift->EditEnchantment(2);
+    else
+      Gift->EditEnchantment(1);
+
+    ADD_MESSAGE("You notice %s in your inventory which you don't recall picking up anywhere.",
+        Gift->CHAR_NAME(INDEFINITE));
+    return Gift->GetTruePrice();
+  }
+}
 
 void god::Pray()
 {
@@ -79,7 +131,7 @@ void god::Pray()
       game::ApplyDivineAlignmentBonuses(this, 10, false);
       PLAYER->EditExperience(WISDOM, -50, 1 << 10);
       ADD_MESSAGE("You cease your worship of %s.", GetName());
-      SetIsWorshipped(false);
+      SetIsWorshiping(false);
     }
   else
     if(Relation > RAND_N(500) && Timer < RAND_N(500000))
@@ -111,7 +163,7 @@ void god::Pray()
           ADD_MESSAGE("%s seems to be hostile.", Angel->CHAR_DESCRIPTION(DEFINITE));
       }
       ADD_MESSAGE("You cease your worship of %s.", GetName());
-      SetIsWorshipped(false);
+      SetIsWorshiping(false);
     }
 }
 
@@ -124,13 +176,13 @@ festring god::GetCompleteDescription() const
 
   if(game::WizardModeIsActive())
   {
-    Desc << "Worshipping: " << Worshipping << " Timer: " << Timer << " Relation: " << Relation;
+    Desc << "Worshiping: " << Worshiping << " Timer: " << Timer << " Relation: " << Relation;
     return Desc;
   }
   else
   {
     Desc << "You ";
-    if(Worshipping)
+    if(Worshiping)
       Desc << "venerate the ";
     else
       Desc << "have studied the ";
@@ -165,9 +217,18 @@ void god::AdjustRelation(int Amount)
     Relation = 1000;
 }
 
+int god::NumberWorshiping()
+{
+  int number = 0;
+  for(int c = 1; c <= GODS; ++c)
+    if(game::GetGod(c)->IsWorshiping())
+      number++;
+  return number;
+}
+
 void god::AdjustTimer(long Amount)
 {
-  Timer += Amount;
+  Timer += Amount*NumberWorshiping();
 
   if(Timer < 0)
     Timer = 0;
@@ -506,22 +567,22 @@ void god::SignalRandomAltarGeneration(const std::vector<v2>& RoomSquare)
 void god::Save(outputfile& SaveFile) const
 {
   SaveFile << static_cast<ushort>(GetType());
-  SaveFile << Relation << Timer << Known << LastPray << Worshipping;
+  SaveFile << Relation << Timer << Known << LastPray << Worshiping;
 }
 
 void god::Load(inputfile& SaveFile)
 {
-  SaveFile >> Relation >> Timer >> Known >> LastPray >> Worshipping;
+  SaveFile >> Relation >> Timer >> Known >> LastPray >> Worshiping;
 }
 
 void god::ApplyDivineTick()
 {
-  if(Worshipping && LikesConduct())
+  if(Worshiping && LikesConduct())
   {
     if(Timer)
       --Timer;
     else
-      Pray();
+      Reward();
   }
   if(LastPray > -1 && LastPray < 336000)
     ++LastPray;
