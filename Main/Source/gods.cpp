@@ -334,17 +334,30 @@ void atavus::PrayGoodEffect()
 
 void atavus::RewardGoodEffect()
 {
-  for(int i=0; i<=Relation/100; i++)
+  for(int i=0; i<=Relation/200; i++)
   {
-    item* Reward = protosystem::BalancedCreateItem(0, Relation, HELMET|CLOAK|BODY_ARMOR|GAUNTLET|BELT|BOOT|TOOL, 0, NO_BROKEN, 0, false);
+    item* Reward = protosystem::BalancedCreateItem(0, Relation, HELMET|CLOAK|BODY_ARMOR|GAUNTLET|BELT|BOOT, 0, NO_BROKEN, 0, false);
     Reward->InitMaterials(MAKE_MATERIAL(ARCANITE));
-    if(Reward->GetTruePrice() < Relation) // TODO: compare to existing equipment & HANDLE_IN_PAIRS
+
+    int Value = Reward->GetTruePrice();
+    if(Reward->HandleInPairs())
+      Value *= 2;
+
+    if(Value > Relation * PLAYER->GetAttribute(WISDOM))
+      continue;
+
+    // TODO: don't give reward if current equipment in suitable slot is better
+
+    PLAYER->GetStack()->AddItem(Reward);
+    if(Reward->HandleInPairs())
     {
-      ADD_MESSAGE("%s materializes before you.", Reward->CHAR_NAME(INDEFINITE));
-      PLAYER->GetGiftStack()->AddItem(Reward);
-      AdjustTimer(100*Reward->GetTruePrice()); // TODO: change AdjustTimer to do wisdom / alignment
-      return;
+      ADD_MESSAGE("You notice a pair of %s in your pack that you don't recall picking up.", Reward->CHAR_NAME(PLURAL));
+      PLAYER->GetStack()->AddItem(Reward);
     }
+    else
+      ADD_MESSAGE("You notice a %s in your pack that you don't recall picking up.", Reward->CHAR_NAME(INDEFINITE));
+    AdjustTimer(-400); // TODO: change AdjustTimer to do wisdom / alignment
+    return;
   }
 }
 
