@@ -53,7 +53,7 @@ class god
   void ApplyDivineTick();
   void AdjustRelation(god*, int, truth);
   void AdjustRelation(int);
-  void AdjustTimer(long);
+  void AdjustTimer(long, truth=true);
   void Save(outputfile&) const;
   void Load(inputfile&);
   void SetRelation(int Value) { Relation = Value; }

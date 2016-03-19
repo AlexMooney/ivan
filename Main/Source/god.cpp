@@ -26,14 +26,11 @@ void god::Reward()
   if(Relation >= -333)
   {
     AdjustTimer(250);
-    AdjustRelation(5);
-    game::ApplyDivineAlignmentBonuses(this, 1, true);
-    PLAYER->EditExperience(WISDOM, 200, 1 << 7);
   }
   else
   {
     PrayBadEffect();
-    AdjustTimer(1000);
+    AdjustTimer(1000, false);
     PLAYER->EditExperience(WISDOM, -250, 1 << 10);
     ADD_MESSAGE("You have been excommunicated by %s.", GetName());
     SetIsWorshiping(false);
@@ -226,8 +223,15 @@ int god::NumberWorshiping()
   return number;
 }
 
-void god::AdjustTimer(long Amount)
+void god::AdjustTimer(long Amount, truth Happy)
 {
+  if(Happy)
+  {
+    AdjustRelation(Amount/50);
+    game::ApplyDivineAlignmentBonuses(this, Amount/250, true);
+    PLAYER->EditExperience(WISDOM, 200, Amount/2);
+  }
+
   Timer += Amount*NumberWorshiping();
 
   if(Timer < 0)
