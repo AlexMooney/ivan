@@ -336,27 +336,45 @@ void atavus::RewardGoodEffect()
 {
   for(int i=0; i<=Relation/200; i++)
   {
-    item* Reward = protosystem::BalancedCreateItem(0, Relation, HELMET|CLOAK|BODY_ARMOR|GAUNTLET|BELT|BOOT, 0, NO_BROKEN, 0, false);
+    item* Reward = protosystem::BalancedCreateItem(0, Relation*PLAYER->GetAttribute(WISDOM), HELMET|BODY_ARMOR|GAUNTLET|BOOT, 0, NO_BROKEN, 0, false);
     Reward->InitMaterials(MAKE_MATERIAL(ARCANITE));
 
     int Value = Reward->GetTruePrice();
     if(Reward->HandleInPairs())
       Value *= 2;
 
+    ADD_MESSAGE("Considering %s, worth %ld, limit %ld", Reward->CHAR_NAME(INDEFINITE), Value, Relation * PLAYER->GetAttribute(WISDOM));
     if(Value > Relation * PLAYER->GetAttribute(WISDOM))
       continue;
 
-    // TODO: don't give reward if current equipment in suitable slot is better
+    long Category = Reward->GetCategory();
+    int EquipmentValue = 0;
+    for(int c = 0; c < PLAYER->GetEquipments(); ++c)
+    {
+      item* Item = PLAYER->GetEquipment(c);
+
+      if(Item && (Item->GetCategory() == Category))
+        EquipmentValue += Item->GetTruePrice();
+    }
+
+    ADD_MESSAGE("Comparing %s worth %ld; equipment worth %ld", Reward->CHAR_NAME(INDEFINITE), Value, EquipmentValue);
+    if(EquipmentValue >= Value)
+      continue;
 
     PLAYER->GetStack()->AddItem(Reward);
     if(Reward->HandleInPairs())
     {
+      item* Clone = Reward->Duplicate(NONE);
+      PLAYER->GetStack()->AddItem(Clone);
       ADD_MESSAGE("You notice a pair of %s in your pack that you don't recall picking up.", Reward->CHAR_NAME(PLURAL));
-      PLAYER->GetStack()->AddItem(Reward);
+      game::AskForKeyPress("Items added to pack. [press any key to continue]");
     }
     else
+    {
       ADD_MESSAGE("You notice a %s in your pack that you don't recall picking up.", Reward->CHAR_NAME(INDEFINITE));
-    AdjustTimer(-400); // TODO: change AdjustTimer to do wisdom / alignment
+      game::AskForKeyPress("Item added to pack. [press any key to continue]");
+    }
+    AdjustTimer(Value * 10);
     return;
   }
 }
