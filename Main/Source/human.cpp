@@ -2839,6 +2839,7 @@ void smith::BeTalkedTo()
       Item->RemoveRust();
       Item->Fix();
       PLAYER->EditMoney(-FixPrice);
+      PLAYER->EditDealExperience(FixPrice);
       ADD_MESSAGE("%s fixes %s in no time.", CHAR_NAME(DEFINITE), Item->CHAR_NAME(DEFINITE));
     }
   }
@@ -4464,8 +4465,9 @@ void imperialist::BeTalkedTo()
     if(Reward)
     {
       ADD_MESSAGE("%s smiles. \"I see you have advertised our company diligently. "
-                  "Here's %ldgp as a token of my gratitude.\"", CHAR_NAME(DEFINITE), Reward);
+                  "Here's %ld gold pieces as a token of my gratitude.\"", CHAR_NAME(DEFINITE), Reward);
       PLAYER->EditMoney(Reward);
+      PLAYER->EditDealExperience(Reward);
       Shirt->SetEquippedTicks(0);
       return;
     }
@@ -4898,6 +4900,7 @@ void tailor::BeTalkedTo()
       Item->ResetBurning();
       Item->Fix();
       PLAYER->EditMoney(-FixPrice);
+      PLAYER->EditDealExperience(FixPrice);
       ADD_MESSAGE("%s fixes %s in no time.", CHAR_NAME(DEFINITE), Item->CHAR_NAME(DEFINITE));
     }
   }
