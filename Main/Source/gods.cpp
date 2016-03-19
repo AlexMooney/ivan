@@ -327,9 +327,30 @@ void seges::PrayBadEffect()
     ADD_MESSAGE("Seges tries to alter the contents of your stomach, but fails.");
 }
 
+truth atavus::LikesConduct()
+{
+  int Wealth = PLAYER->GetMoney();
+  int Limit = PLAYER->GetAttribute(WISDOM) * 2;
+  if(Wealth < Limit)
+    return true;
+  if(RAND_N(Wealth) < Limit)
+    return true;
+  else if(RAND_N(20000) < Limit)
+    ADD_MESSAGE("You feel unfaithful to Atavus due to your excessive wealth.");
+  return false;
+}
+
 void atavus::PrayGoodEffect()
 {
-  ADD_MESSAGE("Nothing happens.");
+  int Wealth = PLAYER->GetMoney();
+  int Limit = PLAYER->GetAttribute(WISDOM) * 2;
+  if(Wealth > Limit)
+  {
+    PLAYER->EditMoney(Limit - Wealth);
+    ADD_MESSAGE("Atavus accepts your donation. Your heart and gold pouch feel lighter.");
+  }
+  else
+    ADD_MESSAGE("Nothing happens.");
 }
 
 void atavus::RewardGoodEffect()

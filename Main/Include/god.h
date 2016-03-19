@@ -67,7 +67,7 @@ class god
   truth IsWorshiping() const { return Worshiping; }
   int NumberWorshiping();
   void SetIsWorshiping(truth What) { Worshiping = What; }
-  truth LikesConduct() { return true; };
+  virtual truth LikesConduct() { return true; }
   void PlayerKickedAltar() { AdjustRelation(-100); }
   void PlayerKickedFriendsAltar() { AdjustRelation(-50); }
   virtual truth PlayerVomitedOnAltar(liquid*);

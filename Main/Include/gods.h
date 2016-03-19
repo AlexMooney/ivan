@@ -59,6 +59,7 @@ GOD(atavus, god)
   virtual col16 GetEliteColor() const;
   virtual truth LikesMaterial(const materialdatabase*, ccharacter*) const;
   virtual int GetSex() const { return MALE; }
+  truth LikesConduct();
  protected:
   virtual void PrayGoodEffect();
   virtual void RewardGoodEffect();

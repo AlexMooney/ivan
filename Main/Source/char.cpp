@@ -8146,6 +8146,15 @@ void characterdatabase::PostProcess()
 void character::EditDealExperience(long Price)
 {
   EditExperience(CHARISMA, sqrt(Price) * 10, 15000);
+  if(IsPlayer())
+  {
+    if(game::GetGod(ATAVUS)->IsWorshiping() && abs(Price) > GetAttribute(WISDOM))
+    {
+      ADD_MESSAGE("Atavus is angered by your act of capitalism!");
+
+      game::GetGod(ATAVUS)->AdjustRelation(-abs(sqrt(Price)*20));
+    }
+  }
 }
 
 void character::PrintBeginLeprosyMessage() const
