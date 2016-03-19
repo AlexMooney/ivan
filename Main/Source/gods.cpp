@@ -364,7 +364,6 @@ void atavus::RewardGoodEffect()
     if(Reward->HandleInPairs())
       Value *= 2;
 
-    ADD_MESSAGE("Considering %s, worth %ld, limit %ld", Reward->CHAR_NAME(INDEFINITE), Value, Relation * PLAYER->GetAttribute(WISDOM));
     if(Value > Relation * PLAYER->GetAttribute(WISDOM))
       continue;
 
@@ -378,7 +377,6 @@ void atavus::RewardGoodEffect()
         EquipmentValue += Item->GetTruePrice();
     }
 
-    ADD_MESSAGE("Comparing %s worth %ld; equipment worth %ld", Reward->CHAR_NAME(INDEFINITE), Value, EquipmentValue);
     if(EquipmentValue >= Value)
       continue;
 
