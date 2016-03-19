@@ -2417,6 +2417,12 @@ Dungeon NEW_ATTNAM;
       GenerateWindows = true;
       UseFillSquareWalls = false;
       Flags = 0;
+
+      Square, Random;
+      {
+        Items == Random { MinPrice = 50; MaxPrice = 500; Category = BOOK; }
+        Times = 66:66;
+      }
     }
 
     Room
