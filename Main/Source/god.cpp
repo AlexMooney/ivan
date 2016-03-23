@@ -70,6 +70,19 @@ int god::GiftItem()
 void god::Pray()
 {
   LastPray = 0;
+  if(Relation >= 0) // TODO add danger based branch here; this is low danger branch
+  {
+    PrayGoodEffect();  // This function should modify Relationship, as appriopriate
+    game::ApplyDivineAlignmentBonuses(this, 10, true);
+    PLAYER->EditExperience(WISDOM, 200, 1 << 10);
+  }
+  else
+  {
+    ADD_MESSAGE("You pray, but nothing happens.");
+  }
+  return;
+
+  /*
   if(!Timer)
     if(Relation >= -RAND_N(500))
     {
@@ -162,6 +175,7 @@ void god::Pray()
       ADD_MESSAGE("You cease your worship of %s.", GetName());
       SetIsWorshiping(false);
     }
+  */
 }
 
 festring god::GetCompleteDescription() const
