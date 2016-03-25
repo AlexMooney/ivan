@@ -1110,7 +1110,11 @@ truth character::MoveTowardsTarget(truth Run)
 
   v2 ModifiedMoveTo = ApplyStateModification(MoveTo[0]);
 
-  if(TryMove(ModifiedMoveTo, true, Run)) return true;
+  if(TryMove(ModifiedMoveTo, true, Run))
+  {
+    RandomMoveDir = femath::RandReal(8);
+    return true;
+  }
 
   int L = (Pos - TPos).GetManhattanLength();
 
@@ -1330,7 +1334,7 @@ truth character::TryMove(v2 MoveVector, truth Important, truth Run)
       if(HasPetrussNut() && !HasGoldenEagleShirt())
       {
         game::TextScreen(CONST_S("An undead and sinister voice greets you as you leave the city behind:\n\n"
-                                 "\"MoRtAl! ThOu HaSt SlAuGtHeReD pEtRuS aNd PlEaSeD mE!\nfRoM tHiS dAy On, "
+                                 "\"MoRtAl! ThOu HaSt SlAuGhTeReD pEtRuS aNd PlEaSeD mE!\nfRoM tHiS dAy On, "
                                  "ThOu ArT tHe DeArEsT sErVaNt Of AlL eViL!\"\n\nYou are victorious!"));
         game::GetCurrentArea()->SendNewDrawRequest();
         game::DrawEverything();
@@ -4418,7 +4422,7 @@ void character::DrawPanel(truth AnimationDraw) const
        && (1 << c != HASTE || !StateIsActivated(SLOW))
        && (1 << c != SLOW || !StateIsActivated(HASTE)))
       FONT->Printf(DOUBLE_BUFFER, v2(PanelPosX, PanelPosY++ * 10),
-                   (1 << c) & EquipmentState || TemporaryStateCounter[c] == PERMANENT ? BLUE : WHITE,
+                   (1 << c) & EquipmentState || TemporaryStateCounter[c] >= PERMANENT ? BLUE : WHITE,
                    "%s", StateData[c].Description);
 
   static cchar* HungerStateStrings[] = { "Starving", "Very hungry", "Hungry", "", "Satiated", "Bloated", "Overfed!" };
