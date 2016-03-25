@@ -8148,11 +8148,18 @@ void character::EditDealExperience(long Price)
   EditExperience(CHARISMA, sqrt(Price) * 10, 15000);
   if(IsPlayer())
   {
-    if(game::GetGod(ATAVUS)->IsWorshiping() && abs(Price) > GetAttribute(WISDOM))
+    if(game::GetGod(ATAVUS)->IsWorshiping() && abs(Price) > GetAttribute(WISDOM)*2)
     {
-      ADD_MESSAGE("Atavus is angered by your act of capitalism!");
-
       game::GetGod(ATAVUS)->AdjustRelation(-abs(sqrt(Price)*20));
+      int relation = game::GetGod(ATAVUS)->GetRelation();
+      if(relation > 666)
+        ADD_MESSAGE("Atavus forgives you for your sinful capitalism.");
+      else if(relation > 333)
+        ADD_MESSAGE("Atavus is disappointed by your sinful capitalism.");
+      else if(relation > 0)
+        ADD_MESSAGE("Atavus is angered by your sinful capitalism!");
+      else
+        ADD_MESSAGE("Atavus is outraged by your sinful capitalism!");
     }
   }
 }
