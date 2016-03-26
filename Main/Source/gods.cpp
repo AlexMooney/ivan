@@ -143,26 +143,66 @@ void sophos::PrayBadEffect()
   PLAYER->CheckDeath(CONST_S("shattered to pieces by the wrath of ") + GetName(), 0);
 }
 
-void valpurus::RewardGoodEffect(){}
-
-void valpurus::PrayGoodEffect()
+void valpurus::RewardGoodEffect()
 {
-  if(RAND() & 1)
+  festring Desc;
+
+  truth ExtendedWeapon = false;
+
+  item* MainWielded = PLAYER->GetMainWielded();
+  if(MainWielded && MainWielded->GetLifeExpectancy() &&
+      MainWielded->GetMainMaterial()->GetAttachedGod() == GetType())
   {
+    MainWielded->SetLifeExpectancy(1100, 0);
+    ExtendedWeapon = true;
+  }
+
+  item* SecondaryWielded = PLAYER->GetSecondaryWielded();
+  if(SecondaryWielded && SecondaryWielded->GetLifeExpectancy() &&
+      SecondaryWielded->GetMainMaterial()->GetAttachedGod() == GetType())
+  {
+    SecondaryWielded->SetLifeExpectancy(1100, 0);
+    ExtendedWeapon = true;
+  }
+
+  if(ExtendedWeapon)
+    return;
+
+  if(Relation < 1000)
+    return;
+
+  if(PLAYER->GetCWeaponSkill(SHIELDS))
+  {
+    shield* RewardShield = shield::Spawn();
+    RewardShield->InitMaterials(MAKE_MATERIAL(VALPURIUM));
+    RewardShield->SetLifeExpectancy(1100, 0);
+    meleeweapon* RewardSword = meleeweapon::Spawn(LONG_SWORD, NO_MATERIALS);
+    RewardSword->InitMaterials(MAKE_MATERIAL(VALPURIUM), MAKE_MATERIAL(VALPURIUM), true);
+    RewardSword->SetLifeExpectancy(1100, 0);
+
+    PLAYER->GetStack()->AddItem(RewardShield);
+    PLAYER->GetStack()->AddItem(RewardSword);
+
     ADD_MESSAGE("You hear booming voice: \"THIS WILL PROTECT THEE FROM MORTIFER, MY "
-                "PALADIN!\" A shield glittering with holy might appears from nothing.");
-    shield* Shield = shield::Spawn();
-    Shield->InitMaterials(MAKE_MATERIAL(VALPURIUM));
-    PLAYER->GetGiftStack()->AddItem(Shield);
+                "PALADIN!\" A sword and shield glittering with holy might appear from nothing.");
+    game::AskForKeyPress("Items added to pack. [press any key to continue]");
   }
   else
   {
+    meleeweapon* RewardSword = meleeweapon::Spawn(TWO_HANDED_SWORD);
+    RewardSword->InitMaterials(MAKE_MATERIAL(VALPURIUM), MAKE_MATERIAL(VALPURIUM), true);
+    RewardSword->SetLifeExpectancy(1100, 0);
+    PLAYER->GetStack()->AddItem(RewardSword);
+
     ADD_MESSAGE("You hear booming voice: \"DEFEAT MORTIFER WITH THIS, MY PALADIN!\" "
                 "A sword glittering with holy might appears from nothing.");
-    meleeweapon* Weapon = meleeweapon::Spawn(TWO_HANDED_SWORD);
-    Weapon->InitMaterials(MAKE_MATERIAL(VALPURIUM), MAKE_MATERIAL(VALPURIUM), true);
-    PLAYER->GetGiftStack()->AddItem(Weapon);
+    game::AskForKeyPress("Items added to pack. [press any key to continue]");
   }
+}
+
+void valpurus::PrayGoodEffect()
+{
+  ADD_MESSAGE("Nothing happens.");
 }
 
 void valpurus::PrayBadEffect()
