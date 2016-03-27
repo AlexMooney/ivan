@@ -1165,76 +1165,91 @@ void scabies::PrayBadEffect()
   }
 }
 
-void infuscor::RewardGoodEffect() {}
+void infuscor::RewardGoodEffect()
+{
+  if(!PLAYER->StateIsActivated(ESP) ||
+      PLAYER->GetTemporaryStateCounter(ESP) < Relation*NumberWorshiping())
+  {
+    if(!PLAYER->StateIsActivated(ESP))
+    {
+      ADD_MESSAGE("You feel %s whisper in your mind.", GetName());
+      PLAYER->BeginTemporaryState(ESP, Relation);
+    }
+    else
+      PLAYER->EditTemporaryStateCounter(ESP, PLAYER->GetTemporaryStateCounter(ESP)+Relation);
+    return;
+  }
+
+  if(!PLAYER->StateIsActivated(POLYMORPH_CONTROL) ||
+      PLAYER->GetTemporaryStateCounter(POLYMORPH_CONTROL) < Relation*NumberWorshiping())
+  {
+    if(!PLAYER->StateIsActivated(POLYMORPH_CONTROL))
+    {
+      ADD_MESSAGE("You feel %s whisper throughout your whole body.", GetName());
+      PLAYER->BeginTemporaryState(POLYMORPH_CONTROL, Relation);
+    }
+    else
+      PLAYER->EditTemporaryStateCounter(POLYMORPH_CONTROL, PLAYER->GetTemporaryStateCounter(POLYMORPH_CONTROL)+Relation);
+    return;
+  }
+
+  PLAYER->EditExperience(INTELLIGENCE, Min(400, Max(150, GetRelation()/2)), 400);
+  switch(RAND() % 120)
+  {
+   case 0:
+     ADD_MESSAGE("%s injects secret knowledge into your mind!", GetName());
+     break;
+   case 1:
+     ADD_MESSAGE("%s whispers vile secrets in your mind!", GetName());
+     break;
+   case 2:
+     ADD_MESSAGE("%s teaches you horrible truths!", GetName());
+     break;
+  }
+}
 
 void infuscor::PrayGoodEffect()
 {
   truth Success = false;
-  if(GetRelation() >= 0)
-  {
-    for(int d = 0; d < PLAYER->GetNeighbourSquares(); ++d)
-    {
-      lsquare* Square = PLAYER->GetNeighbourLSquare(d);
 
-      if(Square && Square->GetCharacter() && Square->GetCharacter()->GetRelation(PLAYER) == HOSTILE)
+  rect Rect;
+  femath::CalculateEnvironmentRectangle(Rect, game::GetCurrentLevel()->GetBorder(),
+      PLAYER->GetPos(), PLAYER->GetAttribute(INTELLIGENCE)/2);
+
+  for(int x = Rect.X1; x <= Rect.X2; ++x)
+  {
+    for(int y = Rect.Y1; y <= Rect.Y2; ++y)
+    {
+      character* Victim = game::GetCurrentLevel()->GetSquare(x, y)->GetCharacter();
+
+      if(Victim && Victim->CanBeSeenByPlayer() && PLAYER->GetRelation(Victim) == HOSTILE)
       {
         uint c;
+        truth Burned = false;
 
-        for(c = 1; c < uint(Square->GetCharacter()->GetBodyParts()); ++c) // annoying :(
+        for(c = 1; c < uint(Victim->GetBodyParts()); ++c) // annoying :(
         {
-          bodypart* BodyPart = Square->GetCharacter()->GetBodyPart(c);
+          bodypart* BodyPart = Victim->GetBodyPart(c);
 
-          if(BodyPart && BodyPart->IsDestroyable(Square->GetCharacter()))
-            if(BodyPart->GetMainMaterial())
-              if(BodyPart->CanBeBurned()
-                 && (BodyPart->GetMainMaterial()->GetInteractionFlags() & CAN_BURN)
-                 && !BodyPart->IsBurning())
-              {
-                if(BodyPart->TestActivationEnergy(20 + GetRelation() / 10))
-                {
-                  if(GetRelation() >= 200)
-                    Success = true;
-                  else
-                  {
-                    ADD_MESSAGE("%s sets fire to %s!", GetName(), Square->GetCharacter()->CHAR_DESCRIPTION(DEFINITE));
-                    return;
-                  }
-                }
-              }
+          if(BodyPart && BodyPart->IsDestroyable(Victim)
+              && BodyPart->GetMainMaterial() && BodyPart->CanBeBurned()
+              && (BodyPart->GetMainMaterial()->GetInteractionFlags() & CAN_BURN)
+              && !BodyPart->IsBurning())
+          {
+            if(BodyPart->TestActivationEnergy(20 + GetRelation() / 10))
+            {
+              Success = true;
+              Burned = true;
+            }
+          }
         }
-        if(Success)
-        {
-          ADD_MESSAGE("%s savagely sets fire to %s!", GetName(), Square->GetCharacter()->CHAR_DESCRIPTION(DEFINITE));
-          return;
-        }
+        if(Burned)
+          ADD_MESSAGE("%s savagely sets fire to %s!", GetName(), Victim->CHAR_DESCRIPTION(DEFINITE));
       }
     }
   }
-  else
-    ADD_MESSAGE("%s helps you.", GetName());
-
-  if(!PLAYER->StateIsActivated(ESP))
-  {
-    PLAYER->BeginTemporaryState(ESP, 10000 + RAND() % 10000);
-    return;
-  }
-
-  if(!PLAYER->StateIsActivated(TELEPORT_CONTROL))
-  {
-    PLAYER->BeginTemporaryState(TELEPORT_CONTROL, 10000 + RAND() % 10000);
-    return;
-  }
-
-  if(!PLAYER->StateIsActivated(POLYMORPH_CONTROL))
-  {
-    PLAYER->BeginTemporaryState(POLYMORPH_CONTROL, 10000 + RAND() % 10000);
-    return;
-  }
-
-  ADD_MESSAGE("Suddenly three scrolls appear almost under your feet.");
-
-  for(int c = 0; c < 3; ++c)
-    PLAYER->GetGiftStack()->AddItem(scrollofteleportation::Spawn());
+  if(Success)
+    AdjustRelation(-50);
 }
 
 void cruentus::RewardGoodEffect() {}
