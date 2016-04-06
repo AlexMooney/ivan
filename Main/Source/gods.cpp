@@ -848,57 +848,124 @@ void mortifer::PrayBadEffect()
   PLAYER->CheckDeath(CONST_S("obliterated by the unholy power of ") + GetName(), 0);
 }
 
-void mellis::RewardGoodEffect() {}
-
-void mellis::PrayGoodEffect()
+void mellis::RewardGoodEffect()
 {
-  truth Success = false;
-  itemvector OKItems;
+  itemvector ItemVector;
+  std::vector<long> PossibilityVector;
+  int TotalPossibility = 0;
 
   for(stackiterator i = PLAYER->GetStack()->GetBottom(); i.HasItem(); ++i)
   {
-    if(!i->HasBetterVersion())
+    int Price = i->GetTruePrice();
+    long Category = i->GetCategory();
+
+    if((Price > Relation) ||
+        (i->GetHinderVisibilityBonus(PLAYER)) ||
+        (i->IsHeadOfElpuri() || i->IsGoldenEagleShirt()
+            || i->IsPetrussNut() || i->IsTheAvatar()
+            || i->IsEncryptedScroll()) ||
+        (Category & (AMULET|RING|SCROLL|WAND|TOOL|MISC)))
       continue;
 
-    OKItems.push_back(*i);
-    Success = true;
+    ItemVector.push_back(*i);
+    PossibilityVector.push_back(1);
+    TotalPossibility += 1;
   }
 
-  item* NewVersion;
+  if(!TotalPossibility)
+    return;
 
-  for(int c = 0; !OKItems.empty() && c < 5; ++c)
+  for(int i=0; i<=Relation/200; i++)
   {
-    item* ToBeDeleted = OKItems[RAND() % OKItems.size()];
-    NewVersion = ToBeDeleted->BetterVersion();
-    ADD_MESSAGE("%s manages to trade %s into %s.", GetName(),
-                ToBeDeleted->CHAR_NAME(DEFINITE), NewVersion->CHAR_NAME(INDEFINITE));
-    PLAYER->GetStack()->AddItem(NewVersion);
-    ToBeDeleted->RemoveFromSlot();
-    ToBeDeleted->SendToHell();
-    OKItems.erase(std::find(OKItems.begin(), OKItems.end(), ToBeDeleted));
-  }
+    int Chosen = femath::WeightedRand(PossibilityVector, TotalPossibility);
+    item* Item = ItemVector[Chosen];
+    item* Pair;
+    item* Reward;
+    item* PairReward;
+    int Price = Item->GetTruePrice();
+    int RewardValue;
+    truth Paired = false;
+    long OldCategory = Item->GetCategory();
 
-  if((Success && !(RAND() % 5)) || (!Success && !(RAND() % 3)))
-  {
-    int Possible[GODS];
-    int PossibleSize = 0;
-
-    for(int c = 1; c <= GODS; ++c)
-      if(!game::GetGod(c)->IsKnown())
-        Possible[PossibleSize++] = c;
-
-    if(PossibleSize)
+    if(Item->HandleInPairs())
     {
-      int NewKnownGod = Possible[RAND() % PossibleSize];
-      game::LearnAbout(game::GetGod(NewKnownGod));
-      ADD_MESSAGE("%s shares his knowledge of %s, the %s.", GetName(),
-                  game::GetGod(NewKnownGod)->GetName(), game::GetGod(NewKnownGod)->GetDescription());
-      return;
-    }
-  }
+      for(stackiterator j = PLAYER->GetStack()->GetBottom(); j.HasItem(); ++j)
+      {
+        item* PItem = *j;
+        if(PItem == Item)
+          continue;
+        if(Item->CanBePiledWith(PItem, PLAYER))
+        {
+          Paired = true;
+          Price *= 2;
+          Pair = PItem;
+          break;
+        }
+      }
+      if(!Paired)
+        continue;
 
-  if(!Success)
-    ADD_MESSAGE("Nothing happens.");
+      Reward = protosystem::BalancedCreateItem(Price/2, Relation/2, OldCategory, 0, NO_BROKEN, 0, false);
+      PairReward = Reward->Duplicate(NONE);
+      RewardValue = Reward->GetTruePrice()*2;
+    }
+    else
+    {
+      Reward = protosystem::BalancedCreateItem(Price, Relation, OldCategory, 0, NO_BROKEN, 0, false);
+      RewardValue = Reward->GetTruePrice();
+    }
+
+    while(Reward->CanBeEnchanted() && (RewardValue < Relation/2) && (Reward->GetEnchantment() <= Relation/300))
+    {
+      Reward->EditEnchantment(1);
+      RewardValue = Reward->GetTruePrice();
+      if(Paired)
+      {
+        PairReward->EditEnchantment(1);
+        RewardValue *= 2;
+      }
+    }
+
+    if(strcmp(Item->CHAR_NAME(DEFINITE), Reward->CHAR_NAME(DEFINITE)) == 0)
+      continue;
+
+    Item->RemoveFromSlot();
+    Item->SendToHell();
+
+    if(Paired)
+    {
+      Pair->RemoveFromSlot();
+      Pair->SendToHell();
+      PLAYER->GetStack()->AddItem(PairReward);
+      ADD_MESSAGE("%s manages to trade %s for %s.", GetName(),
+          Item->CHAR_NAME(PLURAL|DEFINITE), Reward->CHAR_NAME(PLURAL|INDEFINITE));
+    }
+    else
+      ADD_MESSAGE("%s manages to trade %s for %s.", GetName(),
+          Item->CHAR_NAME(DEFINITE), Reward->CHAR_NAME(INDEFINITE));
+
+    PLAYER->GetStack()->AddItem(Reward);
+
+    game::AskForKeyPress(CONST_S("Praise Mellis!"));
+    if(RewardValue > Price)
+      AdjustTimer((RewardValue - Price)*10);
+    return;
+  }
+}
+
+void mellis::PrayGoodEffect()
+{
+  int Wealth = PLAYER->GetMoney();
+  int Limit = PLAYER->GetAttribute(WISDOM) * 4;
+  if(Wealth < Limit)
+  {
+    PLAYER->EditMoney(Wealth - Limit);
+    ADD_MESSAGE("%s begrudgingly gives you a handout.", GetName());
+    AdjustRelation(-5*(Wealth - Limit));
+  }
+  else
+    ADD_MESSAGE("%s is not interested in your sob stories.", GetName());
+  AdjustRelation(-10);
 }
 
 void mellis::PrayBadEffect()
