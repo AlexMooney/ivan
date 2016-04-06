@@ -15,12 +15,12 @@
 godprototype::godprototype(godspawner Spawner, cchar* ClassID)
 : Spawner(Spawner), ClassID(ClassID) { Index = protocontainer<god>::Add(this); }
 
-god::god() : Relation(0), LastPray(-1), Timer(1000), Known(false), Worshiping(false) { }
+god::god() : Relation(0), LastPray(-1), Timer(250), Known(false), Worshiping(false) { }
 int god::GetBasicAlignment() const { return NEUTRAL; }
 
 void god::Reward()
 {
-  if(Relation >= 333)
+  if(Relation > 0)
     RewardGoodEffect();
 
   if(Relation >= -333)
