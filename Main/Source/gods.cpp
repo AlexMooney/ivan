@@ -949,6 +949,7 @@ void mellis::RewardGoodEffect()
     game::AskForKeyPress(CONST_S("Praise Mellis!"));
     if(RewardValue > Price)
       AdjustTimer((RewardValue - Price)*10);
+    AdjustTimer(500);
     return;
   }
 }
