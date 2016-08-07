@@ -127,7 +127,17 @@ col16 mortifer::GetColor() const { return CHAOS_BASIC_COLOR; }
 col16 mortifer::GetEliteColor() const { return CHAOS_ELITE_COLOR; }
 
 
-void sophos::RewardGoodEffect(){}
+void sophos::RewardGoodEffect()
+{
+  if(PLAYER->GetTemporaryStateCounter(TELEPORT_CONTROL) < Relation*NumberWorshiping())
+  {
+    if(!PLAYER->StateIsActivated(TELEPORT_CONTROL))
+      PLAYER->BeginTemporaryState(TELEPORT_CONTROL, Relation);
+    else
+      PLAYER->EditTemporaryStateCounter(TELEPORT_CONTROL, PLAYER->GetTemporaryStateCounter(TELEPORT_CONTROL)+Relation);
+    return;
+  }
+}
 
 void sophos::PrayGoodEffect()
 {
