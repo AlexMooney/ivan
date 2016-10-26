@@ -1039,20 +1039,6 @@ void nefas::PrayBadEffect()
 
 void scabies::PrayGoodEffect()
 {
-  if(!RAND_N(10))
-  {
-    for(int c = 0; c < game::GetTeams(); ++c)
-      if(PLAYER->GetTeam()->GetRelation(game::GetTeam(c)) == HOSTILE)
-        for(character* Char : game::GetTeam(c)->GetMember())
-        {
-          if(Char->IsEnabled() && !Char->IsImmuneToLeprosy())
-            Char->GainIntrinsic(LEPROSY);
-        }
-
-    ADD_MESSAGE("You feel a horrible disease spreading.");
-    return;
-  }
-
   if(!(RAND() % 50))
   {
     ADD_MESSAGE("Five cans full of school food drop from somewhere above!");
@@ -1067,22 +1053,40 @@ void scabies::PrayGoodEffect()
     return;
   }
 
-  truth Success = false;
-
   for(int d = 0; d < PLAYER->GetNeighbourSquares(); ++d)
   {
     lsquare* Square = PLAYER->GetNeighbourLSquare(d);
 
-    if(Square && Square->GetCharacter() && Square->GetCharacter()->GetRelation(PLAYER) == HOSTILE)
+    if(Square && Square->GetCharacter() && Square->GetCharacter()->GetRelation(PLAYER) == HOSTILE &&
+        Square->GetCharacter()->CanBePoisoned())
     {
       ADD_MESSAGE("%s throws poison on %s!", GetName(), Square->GetCharacter()->CHAR_DESCRIPTION(DEFINITE));
       Square->SpillFluid(PLAYER, liquid::Spawn(POISON_LIQUID, 500));
-      Success = true;
     }
   }
 
-  if(!Success)
-    PLAYER->PolymorphRandomly(2500, 10000, 1000 + RAND() % 1000);
+  int Parasites = 0;
+  int Poisoned = 0;
+  for(int c = 0; c < game::GetTeams(); ++c)
+    if(PLAYER->GetTeam()->GetRelation(game::GetTeam(c)) == HOSTILE)
+      for(character* Char : game::GetTeam(c)->GetMember())
+      {
+        lsquare* Square = Char->GetLSquareUnder(0);
+        if(Char->IsEnabled() && Char->CanBeParasitized() && !Char->StateIsActivated(PARASITIZED))
+        {
+          Char->GainIntrinsic(PARASITIZED);
+          Parasites++;
+        }
+        else if(Char->IsEnabled() && Char->CanBePoisoned())
+        {
+          Square->SpillFluid(PLAYER, liquid::Spawn(POISON_LIQUID, 100));
+          Poisoned++;
+        }
+      }
+  if (Parasites > 5)
+    ADD_MESSAGE("You feel the presence of many hungry beings.");
+  if (Poisoned > 5)
+    ADD_MESSAGE("You smell foul poison.");
 }
 
 void scabies::PrayBadEffect()
