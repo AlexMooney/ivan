@@ -3207,7 +3207,7 @@ ring
     MainMaterialConfig == MIND_WORM_FLESH;
     Price = 2500;
     AttachedGod = SCABIES;
-    GearStates = PARASITIZED;
+    GearStates = PARASITE_TAPE_WORM;
     TeleportPriority = 500;
     ArticleMode = FORCE_THE;
     CanBeWished = false;
@@ -4170,6 +4170,8 @@ flamingsword /* meleeweapon-> */
     BaseEnchantment = 13;
     CanBeEnchanted = true;
     ArticleMode = FORCE_THE;
+    DamageFlags = SLASH|PIERCE;
+    GearStates = GAS_IMMUNITY|DISEASE_IMMUNITY;
   }
 }
 
@@ -5492,6 +5494,7 @@ trinket
     BitmapPos = 64, 320;
     FormModifier = 20;
     StrengthModifier = 50;
+    Possibility = 1;
     Adjective = "potted";
     NameSingular = "cactus";
     MainMaterialConfig == MARBLE;
@@ -5510,6 +5513,7 @@ trinket
     BitmapPos = 112, 336;
     FormModifier = 20;
     StrengthModifier = 50;
+    Possibility = 1;
     Adjective = "potted";
     NameSingular = "plant";
     MainMaterialConfig == MARBLE;
@@ -5556,6 +5560,7 @@ trinket
     BitmapPos = 96, 320;
     FormModifier = 25;
     StrengthModifier = 75;
+    Possibility = 2;
     NameSingular = "timepiece";
     MainMaterialConfig == ARCANITE;
     SecondaryMaterialConfig == OAK_WOOD;
@@ -5571,6 +5576,7 @@ trinket
     BitmapPos = 112, 320;
     FormModifier = 25;
     StrengthModifier = 150;
+    Possibility = 1;
     NameSingular = "grandfather clock";
     MainMaterialConfig == ARCANITE;
     SecondaryMaterialConfig == OAK_WOOD;
